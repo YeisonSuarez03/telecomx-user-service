@@ -71,11 +71,9 @@ export const updateUser = async (req, res) => {
     // Merge nested address and phone instead of replacing (so only provided fields are updated)
     if (updates.address) {
       user.address = Object.assign({}, user.address || {}, updates.address);
-      delete updates.address;
     }
     if (updates.phone) {
       user.phone = Object.assign({}, user.phone || {}, updates.phone);
-      delete updates.phone;
     }
 
     await user.save();
