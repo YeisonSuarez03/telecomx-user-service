@@ -37,7 +37,7 @@ export const createUser = async (req, res) => {
   const user = new User({ ...req.body, userId });
   await user.save();
   // Emit event
-  KafkaAdapter.sendEvent(user.userId, 'Customer.Created', user);
+  KafkaAdapter.sendEvent(user.userId, 'Customer.Created', {...user, isActive: !user.suspended && !user.deleted});
   res.status(201).json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -77,7 +77,7 @@ export const updateUser = async (req, res) => {
     }
 
     await user.save();
-    KafkaAdapter.sendEvent(user.userId, 'Customer.Updated', { userId: user.userId, ...updates });
+    KafkaAdapter.sendEvent(user.userId, 'Customer.Updated', { userId: user.userId, ...updates, isActive: !user.suspended && !user.deleted  });
     res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -92,7 +92,7 @@ export const suspendUser = async (req, res) => {
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or deleted' });
   user.suspended = true;
   await user.save();
-  KafkaAdapter.sendEvent(user.userId, 'Customer.Suspended', { userId: user.userId });
+  KafkaAdapter.sendEvent(user.userId, 'Customer.Suspended', { userId: user.userId, isActive: false });
   res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -107,7 +107,7 @@ export const reactivateUser = async (req, res) => {
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or deleted' });
   user.suspended = false;
   await user.save();
-  KafkaAdapter.sendEvent(user.userId, 'Customer.Reactivated', { userId: user.userId });
+  KafkaAdapter.sendEvent(user.userId, 'Customer.Reactivated', { userId: user.userId, isActive: true });
   res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -122,7 +122,7 @@ export const deleteUser = async (req, res) => {
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or already deleted' });
   user.deleted = true;
   await user.save();
-  KafkaAdapter.sendEvent(user.userId, 'Customer.Deleted', { userId: user.userId });
+  KafkaAdapter.sendEvent(user.userId, 'Customer.Deleted', { userId: user.userId, isActive: false });
   res.json({ ok: true });
   } catch (err) {
     res.status(400).json({ error: err.message });
