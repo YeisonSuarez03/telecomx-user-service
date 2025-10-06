@@ -79,7 +79,7 @@ export const updateUser = async (req, res) => {
     }
 
     await user.save();
-    KafkaAdapter.sendEvent(user.userId, 'Customer.Updated', { userId: user.userId, ...user });
+    KafkaAdapter.sendEvent(user.userId, 'Customer.Updated', { userId: user.userId, ...updates });
     res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
