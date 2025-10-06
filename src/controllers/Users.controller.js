@@ -51,7 +51,7 @@ export const updateUser = async (req, res) => {
     const updates = req.body;
 
     // Prevent recreating a logically deleted user: if target user is deleted, forbid update
-    const user = await User.findOne({ userId: id });
+    const user = await User.findOne({ email: id });
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or deleted' });
 
     // If name or email are being changed, ensure uniqueness among non-deleted users
