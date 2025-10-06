@@ -7,8 +7,6 @@ const connectDB = async () => {
     return;
   }
 
-  console.log({uri});
-
   try {
     await mongoose.connect(uri, {
       // Mongoose 7+ uses sensible defaults

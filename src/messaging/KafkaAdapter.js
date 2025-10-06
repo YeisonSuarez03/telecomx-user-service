@@ -5,7 +5,10 @@ class KafkaAdapter {
   constructor() {
     if (KafkaAdapter.instance) return KafkaAdapter.instance;
     const broker = KafkaConfig.getBroker();
-    this.kafka = new Kafka({ brokers: [broker] });
+    this.kafka = new Kafka({ 
+      clientId: process.env.KAFKA_CLIENT_ID,
+      brokers: [broker] 
+    });
     this.producer = this.kafka.producer();
     this._connected = false;
     KafkaAdapter.instance = this;
@@ -27,7 +30,13 @@ class KafkaAdapter {
         key: String(key),
         value: JSON.stringify({ event: eventType, data: payload, timestamp: new Date().toISOString() })
       };
-      await this.producer.send({ topic, messages: [message] });
+      const producerReturnData = await this.producer.send({ topic, messages: [message] });
+
+      console.log("Kafka sendEvent SUCCESS: ", {
+        topic,
+        message,
+        producerReturnData
+      });
     } catch (err) {
       console.error('Kafka sendEvent error:', err.message || err);
     }
