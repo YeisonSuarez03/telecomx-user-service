@@ -66,6 +66,7 @@ export const updateUser = async (req, res) => {
       });
       if (conflict) return res.status(409).json({ error: 'name or email already in use by an active user' });
     } */
+    Object.assign(user, updates);
 
     // Merge nested address and phone instead of replacing (so only provided fields are updated)
     if (updates.address) {
@@ -77,9 +78,8 @@ export const updateUser = async (req, res) => {
       delete updates.phone;
     }
 
-    Object.assign(user, updates);
     await user.save();
-    KafkaAdapter.sendEvent(user.userId, 'Customer.Updated', { userId: user.userId, ...req.body });
+    KafkaAdapter.sendEvent(user.userId, 'Customer.Updated', { userId: user.userId, ...user });
     res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
