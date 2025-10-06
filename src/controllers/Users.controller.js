@@ -22,7 +22,7 @@ export const createUser = async (req, res) => {
     if (!req.body.address || !req.body.address.address) {
       return res.status(400).json({ error: 'address.address is required' });
     }
-    if (!req.body.phone || !req.body.phone.phoneNumber) {
+    if ((!req.body.phone || !req.body.phone.phoneNumber) && req.body.phone.phoneNumber != 0) {
       return res.status(400).json({ error: 'phone.phoneNumber is required' });
     }
 
