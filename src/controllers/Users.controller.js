@@ -55,7 +55,7 @@ export const updateUser = async (req, res) => {
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or deleted' });
 
     // If name or email are being changed, ensure uniqueness among non-deleted users
-    if (updates.name || updates.email) {
+    /* if (updates.name || updates.email) {
       const conflict = await User.findOne({
         $or: [
           updates.name ? { name: updates.name } : null,
@@ -65,7 +65,7 @@ export const updateUser = async (req, res) => {
         userId: { $ne: id }
       });
       if (conflict) return res.status(409).json({ error: 'name or email already in use by an active user' });
-    }
+    } */
 
     // Merge nested address and phone instead of replacing (so only provided fields are updated)
     if (updates.address) {
