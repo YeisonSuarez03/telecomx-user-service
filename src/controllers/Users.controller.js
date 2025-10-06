@@ -88,7 +88,7 @@ export const updateUser = async (req, res) => {
 export const suspendUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findOne({ userId: id });
+    const user = await User.findOne({ email: id });
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or deleted' });
   user.suspended = true;
   await user.save();
@@ -103,7 +103,7 @@ export const suspendUser = async (req, res) => {
 export const reactivateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findOne({ userId: id });
+    const user = await User.findOne({ email: id });
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or deleted' });
   user.suspended = false;
   await user.save();
@@ -118,7 +118,7 @@ export const reactivateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findOne({ userId: id });
+    const user = await User.findOne({ email: id });
     if (!user || user.deleted) return res.status(404).json({ error: 'user not found or already deleted' });
   user.deleted = true;
   await user.save();
