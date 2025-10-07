@@ -37,7 +37,7 @@ export const createUser = async (req, res) => {
   const user = new User({ ...req.body, userId });
   await user.save();
   // Emit event
-  KafkaAdapter.sendEvent(user.userId, 'Customer.Created', {...user, isActive: !user.suspended && !user.deleted});
+  KafkaAdapter.sendEvent(user.userId, 'Customer.Created', {...user.toObject(), isActive: !user.suspended && !user.deleted});
   res.status(201).json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
